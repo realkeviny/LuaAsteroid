@@ -17,11 +17,44 @@ function Player(debugging)
         thrust = {
             x = 0,
             y = 0,
-            speed = 6
+            speed = 6,
+            large_flame = false,
+            flame = 2.0
         },
+
+        drawFlameThrust = function (self,fillType,color)
+            love.graphics.setColor(color)
+            love.graphics.polygon(fillType,
+            self.x - self.radius * (2 / 3 * math.cos(self.angle) + 0.5 * math.sin(self.angle)),
+            self.y + self.radius * (2 / 3 * math.sin(self.angle) - 0.5 * math.cos(self.angle)),
+            self.x - self.radius * self.thrust.flame * math.cos(self.angle),
+            self.y + self.radius * self.thrust.flame * math.sin(self.angle),
+            self.x - self.radius * (2 / 3 * math.cos(self.angle) - 0.5 * math.sin(self.angle)),
+            self.y + self.radius * (2 / 3 * math.sin(self.angle) + 0.5 * math.cos(self.angle))
+        )
+        end,
 
         draw = function (self)
             local opacity = 1
+
+            if self.thrusting then
+                if not self.thrust.large_flame then
+                    self.thrust.flame = self.thrust.flame - 1 / love.timer.getFPS()
+
+                    if self.thrust.flame < 1.5 then
+                        self.thrust.large_flame = true
+                    end
+                else
+                    self.thrust.flame = self.thrust.flame + 1 / love.timer.getFPS()
+
+                    if self.thrust.flame > 2.5 then
+                        self.thrust.large_flame = false
+                    end
+                end
+
+                self:drawFlameThrust("fill",{255 / 255,92 / 255,10 / 255})
+                self:drawFlameThrust("line",{1,0.16,0})
+            end
 
             if debugging then
                 love.graphics.setColor(0,0,1,opacity)
@@ -69,6 +102,18 @@ function Player(debugging)
 
             self.x = self.x + self.thrust.x
             self.y = self.y + self.thrust.y
+
+            if self.x + self.radius < 0 then
+                self.x = love.graphics.getWidth() + self.radius
+            elseif self.x - self.radius > love.graphics.getWidth() then
+                self.x = -self.radius
+            end
+
+            if self.y + self.radius < 0 then
+                self.y = love.graphics.getHeight() + self.radius
+            elseif self.y - self.radius > love.graphics.getHeight() then
+                self.y = -self.radius
+            end
         end
     }
 end
