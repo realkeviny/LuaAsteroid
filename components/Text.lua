@@ -56,7 +56,20 @@ function Text(text,x,y,font_size,fade_in,fade_out,wrap_width,align,opacity)
 
         draw = function (self,tbl_text,index)
             if self.opacity > 0 then
+                if fade_in then
+                    if self.opacity < 1 then
+                        self.opacity = self.opacity + (1 / TEXT_FADE_DUR / love.timer.getFPS())
+                    else
+                        fade_in = false
+                    end
+                elseif fade_out then
+                    self.opacity = self.opacity - (1 / TEXT_FADE_DUR / love.timer.getFPS())
+                end
                 
+                love.graphics.setColor(self.colors.r,self.colors.g,self.colors.b,self.opacity)
+                love.graphics.setFont(fonts[font_size])
+                love.graphics.printf(self.text,self.x,self.y,wrap_width,align)
+                love.graphics.setFont(fonts["p"])
             else
                 table.remove(tbl_text,index)
 

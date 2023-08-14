@@ -3,6 +3,8 @@ local love = require "love"
 local Player = require "objects/Player"
 local Game = require "states/Game"
 
+math.randomseed(os.time())
+
 function love.load()
     love.mouse.setVisible(false)
     _G.mouse_x, _G.mouse_y = 0, 0
@@ -43,7 +45,11 @@ function love.update()
 end
 
 function love.draw()
-    player:draw()
+    if game.state.running or game.state.paused then
+        player:draw(game.state.paused)
+
+        game:draw(game.state.paused)
+    end
 
     love.graphics.setColor(1,1,1,1)
 

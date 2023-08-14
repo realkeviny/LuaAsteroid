@@ -34,8 +34,12 @@ function Player(debugging)
         )
         end,
 
-        draw = function (self)
+        draw = function (self,faded)
             local opacity = 1
+
+            if faded then
+                opacity = 0.2
+            end
 
             if self.thrusting then
                 if not self.thrust.large_flame then
