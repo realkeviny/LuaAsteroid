@@ -4,8 +4,8 @@ function Asteroid(x,y,ast_size,level,debugging)
     debugging = debugging or false
 
 local ASTEROID_VERTICE = 12
-local ASTEROID_JAG = 0.5
-local ASTEROID_SPEED = math.random(50) + (level * 2)
+local ASTEROID_JAG = 0.6
+local ASTEROID_SPEED = math.random(50) + (level * 4) + 10
 
 local vert = math.floor(math.random(ASTEROID_VERTICE + 1) + ASTEROID_VERTICE / 2)
 
@@ -54,6 +54,23 @@ return {
             love.graphics.setColor(1,0,0)
 
             love.graphics.circle("line",self.x,self.y,self.radius)
+        end
+    end,
+
+    move = function(self,dt)
+        self.x = self.x + self.x_velocity * dt
+        self.y = self.y + self.y_velocity * dt
+
+        if self.x + self.radius < 0 then
+            self.x = love.graphics.getWidth() + self.radius
+        elseif self.x - self.radius > love.graphics.getWidth() then
+            self.x = -self.radius
+        end
+
+        if self.y + self.radius < 0 then
+            self.y = love.graphics.getHeight() + self.radius
+        elseif self.y - self.radius > love.graphics.getHeight() then
+            self.y = -self.radius
         end
     end
 }

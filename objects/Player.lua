@@ -1,9 +1,12 @@
 ---@diagnostic disable: lowercase-global
 local love = require "love"
+local Laser = require "objects/Laser"
 
 function Player(debugging)
     local SHIP_SIZE = 25
     local VIEW_ANGLE = math.rad(90)
+    local MAX_LASER_DISTANCE = 0.5
+    local MAX_LASER_AMOUNT = 8
 
     debugging = debugging or false
 
@@ -13,6 +16,7 @@ function Player(debugging)
         radius = SHIP_SIZE / 2,
         angle = VIEW_ANGLE,
         rotation = 0,
+        lasers = {},
         thrusting = false,
         thrust = {
             x = 0,
@@ -32,6 +36,14 @@ function Player(debugging)
             self.x - self.radius * (2 / 3 * math.cos(self.angle) - 0.5 * math.sin(self.angle)),
             self.y + self.radius * (2 / 3 * math.sin(self.angle) + 0.5 * math.cos(self.angle))
         )
+        end,
+
+        shootLaser = function (self)
+            table.insert(self.lasers,Laser(self.x,self.y,self.angle))
+        end,
+
+        destroyLaser = function (self,index)
+            table.remove(self.lasers,index)
         end,
 
         draw = function (self,faded)
@@ -76,8 +88,11 @@ function Player(debugging)
             self.x - self.radius * (2 / 3 * math.cos(self.angle) + math.sin(self.angle)),
             self.y + self.radius * (2 / 3 * math.sin(self.angle) - math.cos(self.angle)),
             self.x - self.radius * (2 / 3 * math.cos(self.angle) - math.sin(self.angle)),
-            self.y + self.radius * (2 / 3 * math.sin(self.angle) + math.cos(self.angle))
-        )
+            self.y + self.radius * (2 / 3 * math.sin(self.angle) + math.cos(self.angle)))
+
+            for _, laser in pairs(self.lasers) do
+               laser:draw(faded)
+            end
         end,
 
         move = function (self)
@@ -117,6 +132,14 @@ function Player(debugging)
                 self.y = love.graphics.getHeight() + self.radius
             elseif self.y - self.radius > love.graphics.getHeight() then
                 self.y = -self.radius
+            end
+
+            for index,laser in pairs(self.lasers) do
+                laser:move()
+
+                if (laser.distance > MAX_LASER_DISTANCE * love.graphics.getWidth()) then
+                    self.destroyLaser(self,index)
+                end
             end
         end
     }
