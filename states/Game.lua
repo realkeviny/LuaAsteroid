@@ -43,7 +43,7 @@ function Game()
 
             local aster_X = math.floor(math.random(love.graphics.getWidth()))
             local aster_Y = math.floor(math.random(love.graphics.getHeight()))
-            table.insert(asteroids,1,Asteroid(aster_X,aster_Y,100,self.level,true))
+            table.insert(asteroids,1,Asteroid(aster_X,aster_Y,100,self.level))
         end
     }
 end

@@ -1,14 +1,13 @@
----@diagnostic disable: lowercase-global
+require "globals"
+
 local love = require "love"
 local Laser = require "objects/Laser"
 
-function Player(debugging)
+function Player()
     local SHIP_SIZE = 25
     local VIEW_ANGLE = math.rad(90)
     local MAX_LASER_DISTANCE = 0.5
     local MAX_LASER_AMOUNT = 8
-
-    debugging = debugging or false
 
     return {
         x = love.graphics.getWidth() / 2,
@@ -39,7 +38,9 @@ function Player(debugging)
         end,
 
         shootLaser = function (self)
-            table.insert(self.lasers,Laser(self.x,self.y,self.angle))
+            if #self.lasers <= MAX_LASER_AMOUNT then
+                table.insert(self.lasers,Laser(self.x,self.y,self.angle))
+            end
         end,
 
         destroyLaser = function (self,index)
@@ -72,7 +73,7 @@ function Player(debugging)
                 self:drawFlameThrust("line",{1,0.16,0})
             end
 
-            if debugging then
+            if show_debugging then
                 love.graphics.setColor(0,0,1,opacity)
 
                 love.graphics.rectangle("fill",self.x - 1,self.y - 1,2,2)
@@ -135,9 +136,14 @@ function Player(debugging)
             end
 
             for index,laser in pairs(self.lasers) do
-                laser:move()
 
-                if (laser.distance > MAX_LASER_DISTANCE * love.graphics.getWidth()) then
+                if (laser.distance > MAX_LASER_DISTANCE * love.graphics.getWidth()) and (laser.exploding == 0) then
+                    laser:explode()
+                end
+
+                if laser.exploding == 0 then
+                    laser:move()
+                elseif laser.exploding == 2 then
                     self.destroyLaser(self,index)
                 end
             end

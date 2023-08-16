@@ -1,4 +1,5 @@
----@diagnostic disable: lowercase-global
+require "globals"
+
 local love = require "love"
 local Player = require "objects/Player"
 local Game = require "states/Game"
@@ -9,9 +10,7 @@ function love.load()
     love.mouse.setVisible(false)
     _G.mouse_x, _G.mouse_y = 0, 0
 
-    local show_debugging = true
-
-    player = Player(show_debugging)
+    player = Player()
     game = Game()
     game:startNewGame(player)
 end
@@ -56,6 +55,13 @@ function love.update(dt)
         player:move()
 
         for ast_index,asteroid in pairs(asteroids) do
+            for _, laser in pairs(player.lasers) do
+                if calculateDistance(laser.x,laser.y,asteroid.x,asteroid.y) < asteroid.radius then
+                    laser:explode()
+                    asteroid:destroy(asteroids,ast_index,game)
+                end
+            end
+
             asteroid:move(dt)
         end
     end
