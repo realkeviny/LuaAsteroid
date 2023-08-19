@@ -7,7 +7,7 @@ function Game()
     return {
         level = 1,
         state = {
-            menu = false,
+            menu = true,
             paused = false,
             running = true,
             ended = false

@@ -79,6 +79,7 @@ return {
 
         if self.radius > MIN_ASTEROID_SIZE then
             table.insert(asteroids_tbl,Asteroid(self.x,self.y,self.radius,game.level))
+            table.insert(asteroids_tbl,Asteroid(self.x,self.y,self.radius,game.level))
         end
 
         table.remove(asteroids_tbl,index)
