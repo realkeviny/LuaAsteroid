@@ -98,6 +98,8 @@ function love.update(dt)
             asteroid:move(dt)
         end
     elseif game.state.menu then
+        menu:run(clickedMouse)
+
         clickedMouse = false
     end
 end

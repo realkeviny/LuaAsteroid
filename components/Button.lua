@@ -56,7 +56,8 @@ function Button(func,text_color,button_color,width,height,text,text_align,font_s
             love.graphics.setColor(self.button_color["r"],self.button_color["g"],self.button_color["b"])
             love.graphics.rectangle("fill",self.button_x,self.button_y,self.width,self.height)
 
-            love.graphics.setColor(self.text_color["r"],self.text_color["g"],self.text_color["b"])
+            -- love.graphics.setColor(self.text_color["r"],self.text_color["g"],self.text_color["b"])
+            self.text_component:setColor(self.text_color["r"],self.text_color["g"],self.text_color["b"])
             self.text_component:draw()
 
             love.graphics.setColor(1,1,1)
