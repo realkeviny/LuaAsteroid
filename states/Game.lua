@@ -9,7 +9,7 @@ function Game()
         state = {
             menu = true,
             paused = false,
-            running = true,
+            running = false,
             ended = false
         },
 

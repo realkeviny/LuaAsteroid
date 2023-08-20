@@ -3,6 +3,7 @@ require "globals"
 local love = require "love"
 local Player = require "objects/Player"
 local Game = require "states/Game"
+local Menu = require "states/Menu"
 
 math.randomseed(os.time())
 
@@ -12,7 +13,7 @@ function love.load()
 
     player = Player()
     game = Game()
-    game:startNewGame(player)
+    menu = Menu(game,player)
 end
 
 function love.keypressed(key)
@@ -45,6 +46,8 @@ function love.mousepressed(x,y,button,istouch,presses)
     if button == 1 then
         if game.state.running then
             player:shootLaser()
+        else
+            clickedMouse = true
         end
     end
 end
@@ -94,6 +97,8 @@ function love.update(dt)
 
             asteroid:move(dt)
         end
+    elseif game.state.menu then
+        clickedMouse = false
     end
 end
 
@@ -107,9 +112,15 @@ function love.draw()
         end
 
         game:draw(game.state.paused)
+    elseif game.state.menu then
+        menu:draw()
     end
 
     love.graphics.setColor(1,1,1,1)
+
+    if not game.state.running then
+        love.graphics.circle("fill",mouse_x,mouse_y,10)
+    end
 
     love.graphics.print("FPS: " .. love.timer.getFPS(), 10, 10)
 end
