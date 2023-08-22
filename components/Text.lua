@@ -76,7 +76,7 @@ function Text(text,x,y,font_size,fade_in,fade_out,wrap_width,align,opacity)
                 return false
             end
 
-            return false
+            return true
         end
     }
 end

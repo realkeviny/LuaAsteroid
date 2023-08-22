@@ -9,6 +9,7 @@ function Player(numLives)
     local VIEW_ANGLE = math.rad(90)
     local MAX_LASER_DISTANCE = 0.5
     local MAX_LASER_AMOUNT = 8
+    local USABLE_BLINKS = 10 * 2
 
     return {
         x = love.graphics.getWidth() / 2,
@@ -18,6 +19,9 @@ function Player(numLives)
         rotation = 0,
         explode_time = 0,
         exploding = false,
+        invincible = true,
+        invincible_seen = true,
+        time_blinked = USABLE_BLINKS,
         lasers = {},
         thrusting = false,
         thrust = {
@@ -30,6 +34,10 @@ function Player(numLives)
         lives = numLives or 3,
 
         drawFlameThrust = function(self, fillType, color)
+            if self.invincible_seen then
+                table.insert(color,0.5)
+            end
+
             love.graphics.setColor(color)
             love.graphics.polygon(fillType,
                 self.x - self.radius * (2 / 3 * math.cos(self.angle) + 0.5 * math.sin(self.angle)),
@@ -87,7 +95,11 @@ function Player(numLives)
                     love.graphics.circle("line", self.x, self.y, self.radius)
                 end
 
-                love.graphics.setColor(1, 1, 1, opacity)
+                if self.invincible_seen then
+                    love.graphics.setColor(1,1,1,faded and opacity or 0.5)
+                else
+                    love.graphics.setColor(1, 1, 1, opacity)
+                end
 
                 love.graphics.polygon("line",
                     self.x + ((4 / 3) * self.radius) * math.cos(self.angle),
@@ -144,7 +156,23 @@ function Player(numLives)
             end
         end,
 
-        move = function(self)
+        move = function(self,dt)
+            if self.invincible then
+                self.time_blinked = self.time_blinked - dt * 2
+
+                if math.ceil(self.time_blinked) % 2 == 0 then
+                    self.invincible_seen = false
+                else
+                    self.invincible_seen = true
+                end
+
+                if self.time_blinked <= 0 then
+                    self.invincible = false
+                end
+            else
+                self.time_blinked = USABLE_BLINKS
+                self.invincible_seen = false
+            end
             self.exploding = self.explode_time > 0
 
             if not self.exploding then
