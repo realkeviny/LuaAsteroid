@@ -4,6 +4,7 @@ local love = require "love"
 local Player = require "objects/Player"
 local Game = require "states/Game"
 local Menu = require "states/Menu"
+local SFX = require "components/SFX"
 
 local resetComplete = false
 math.randomseed(os.time())
@@ -11,9 +12,11 @@ math.randomseed(os.time())
 function reset()
     local saveData = readJSON("save")
 
-    player = Player(1)
-    game = Game(saveData)
-    menu = Menu(game, player)
+    sfx = SFX()
+
+    player = Player(3,sfx)
+    game = Game(saveData,sfx)
+    menu = Menu(game, player,sfx)
     destroy_ast = false
 end
 
@@ -23,6 +26,8 @@ function love.load()
     _G.mouse_x, _G.mouse_y = 0, 0
 
     reset()
+
+    sfx:playBGM()
 end
 
 function love.keypressed(key)
@@ -81,7 +86,7 @@ function love.update(dt)
                         return
                     end
 
-                    player = Player(player.lives - 1)
+                    player = Player(player.lives - 1,sfx)
                 end
             end
 

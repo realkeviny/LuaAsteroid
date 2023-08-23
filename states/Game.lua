@@ -4,7 +4,7 @@ require "globals"
 local Text = require "../components/Text"
 local Asteroid = require "../objects/Asteroid"
 
-function Game(saveData)
+function Game(saveData,sfx)
     return {
         level = 1,
         state = {
@@ -124,7 +124,7 @@ function Game(saveData)
                     aster_Y = math.floor(math.random(love.graphics.getHeight()))  
                 until calculateDistance(player.x,player.y,aster_X,aster_Y) > ASTEROID_SIZE * 2 + player.radius
 
-                table.insert(asteroids,1,Asteroid(aster_X,aster_Y,ASTEROID_SIZE,self.level))
+                table.insert(asteroids,1,Asteroid(aster_X,aster_Y,ASTEROID_SIZE,self.level,sfx))
             end
         end
     }

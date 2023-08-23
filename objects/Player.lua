@@ -3,7 +3,7 @@ require "globals"
 local love = require "love"
 local Laser = require "objects/Laser"
 
-function Player(numLives)
+function Player(numLives,sfx)
     local SHIP_SIZE = 25
     local EXPLODE_DURATION = 3
     local VIEW_ANGLE = math.rad(90)
@@ -52,6 +52,8 @@ function Player(numLives)
         shootLaser = function(self)
             if #self.lasers <= MAX_LASER_AMOUNT then
                 table.insert(self.lasers, Laser(self.x, self.y, self.angle))
+
+                sfx:playFX("laser")
             end
         end,
 
@@ -192,7 +194,10 @@ function Player(numLives)
                 if self.thrusting then
                     self.thrust.x = self.thrust.x + self.thrust.speed * math.cos(self.angle) / FPS
                     self.thrust.y = self.thrust.y - self.thrust.speed * math.sin(self.angle) / FPS
+
+                    sfx:playFX("thruster","slow")
                 else
+                    sfx:stopFX("thruster")
                     if self.thrust.x ~= 0 or self.thrust.y ~= 0 then
                         self.thrust.x = self.thrust.x - friction * self.thrust.x / FPS
                         self.thrust.y = self.thrust.y - friction * self.thrust.y / FPS
@@ -230,6 +235,7 @@ function Player(numLives)
 
         explode = function(self)
             self.explode_time = math.ceil(EXPLODE_DURATION * love.timer.getFPS())
+            sfx:playFX("shipExplosion")
         end
     }
 end
